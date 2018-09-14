@@ -1,0 +1,11 @@
+[[constraint]]
+  branch = "master"
+  name = "k8s.io/client-go"
+
+[[constraint]]
+  branch = "master"
+  name = "k8s.io/metrics"
+
+[[constraint]]
+  branch = "master"
+  name = "k8s.io/apimachinery"
