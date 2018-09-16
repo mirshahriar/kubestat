@@ -15,30 +15,30 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("===== Deployment =====")
+	//fmt.Println("===== Deployment =====")
 	pml, err := pkg.GetDeploymetMetrics(config)
 	if err != nil {
 		panic(err)
 	}
-	pkg.Show(pml)
+	pkg.Show("Deployment", pml)
 
 	fmt.Println()
 	fmt.Println()
 
-	fmt.Println("===== Daemonset =====")
+	// fmt.Println("===== Daemonset =====")
 	pml, err = pkg.GetDaemonsetMetrics(config)
 	if err != nil {
 		panic(err)
 	}
-	pkg.Show(pml)
+	pkg.Show("Daemonset", pml)
 
 	fmt.Println()
 	fmt.Println()
 
-	fmt.Println("===== StatefulSet =====")
+	// fmt.Println("===== StatefulSet =====")
 	pml, err = pkg.GetStatefulsetMetrics(config)
 	if err != nil {
 		panic(err)
 	}
-	pkg.Show(pml)
+	pkg.Show("StatefulSet", pml)
 }

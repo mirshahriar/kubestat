@@ -4,8 +4,10 @@ import "k8s.io/apimachinery/pkg/api/resource"
 
 // Metric ...
 type Metric struct {
-	cpu *resource.Quantity
-	mem *resource.Quantity
+	cpu       *resource.Quantity
+	mem       *resource.Quantity
+	pod       int
+	container int
 }
 
 // NamespaceWiseServiceMetrics ...

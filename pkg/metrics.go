@@ -12,8 +12,10 @@ func processServiceWiseMetrics(pml *v1beta1.PodMetricsList) *Metric {
 	cpu := new(resource.Quantity)
 	mem := new(resource.Quantity)
 
+	totalContainer := 0
 	for _, pm := range pml.Items {
 		for _, c := range pm.Containers {
+			totalContainer = totalContainer + 1
 			uCPU := c.Usage.Cpu()
 			if uCPU != nil {
 				cpu.Add(*uCPU)
@@ -27,7 +29,9 @@ func processServiceWiseMetrics(pml *v1beta1.PodMetricsList) *Metric {
 	}
 
 	return &Metric{
-		cpu: cpu,
-		mem: mem,
+		cpu:       cpu,
+		mem:       mem,
+		pod:       len(pml.Items),
+		container: totalContainer,
 	}
 }
