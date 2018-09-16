@@ -9,7 +9,7 @@ import (
 )
 
 // Show ...
-func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
+func Show(resourceName string, sm NamespaceWiseServiceMetrics, tMetric *Metric) {
 	table := tablewriter.NewWriter(os.Stdout)
 
 	fmt.Printf("========== %s ==========\n", resourceName)
@@ -18,7 +18,7 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
 	table.SetColumnSeparator("|")
 	table.SetRowSeparator("-")
 
-	table.SetHeader([]string{"#", "Namespace", "Name", "CPU", "Memory", "Pods", "Containers"})
+	table.SetHeader([]string{"#", "Namespace", "Name", "CPU", "CPU(%)", "Memory", "Memory(%)", "Pods", "Containers"})
 
 	//table.SetHeaderColor(tablewriter.BgRedColor)
 	table.SetColumnAlignment([]int{
@@ -26,7 +26,9 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
 		tablewriter.ALIGN_LEFT,
 		tablewriter.ALIGN_LEFT,
 		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_CENTER,
 		tablewriter.ALIGN_RIGHT,
+		tablewriter.ALIGN_CENTER,
 		tablewriter.ALIGN_CENTER,
 		tablewriter.ALIGN_CENTER,
 	})
@@ -40,15 +42,8 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
 	row := 0
 	for ns, val := range sm {
 		for svc, metric := range val {
-
-			uCPU := metric.cpu
-			if uCPU != nil {
-				cpu.Add(*uCPU)
-			}
-			uMem := metric.mem
-			if uMem != nil {
-				mem.Add(*uMem)
-			}
+			cpu.Add(metric.cpu)
+			mem.Add(metric.mem)
 
 			pods = pods + metric.pod
 			containers = containers + metric.container
@@ -59,8 +54,10 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
 				fmt.Sprintf("%v", row),
 				ns,
 				svc,
-				uCPU.String(),
-				fmt.Sprintf("%vMi", uMem.Value()/(1024*1024)),
+				metric.cpu.String(),
+				fmt.Sprintf("%.4f%%", (float64(metric.cpu.MilliValue()) / float64(tMetric.cpu.MilliValue()) * 100.0)),
+				fmt.Sprintf("%vMi", metric.mem.Value()/(1024*1024)),
+				fmt.Sprintf("%.4f%%", (float64(metric.mem.MilliValue()) / float64(tMetric.mem.MilliValue()) * 100.0)),
 				fmt.Sprintf("%v", metric.pod),
 				fmt.Sprintf("%v", metric.container),
 			})
@@ -71,7 +68,9 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics) {
 	table.SetFooter([]string{
 		"", "", "",
 		cpu.String(),
+		"",
 		fmt.Sprintf("%vMi", mem.Value()/(1024*1024)),
+		"",
 		fmt.Sprintf("%v", pods),
 		fmt.Sprintf("%v", containers),
 	})

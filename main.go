@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/aerokite/kubestat/pkg"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -9,36 +10,45 @@ import (
 
 func main() {
 
-	// uses the current context in kubeconfig
-	config, err := pkg.BuildConfigFromFlags("")
+	client, err := pkg.NewClient()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	tMetric, err := client.GetTotalMetric()
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
 
 	//fmt.Println("===== Deployment =====")
-	pml, err := pkg.GetDeploymetMetrics(config)
+	pml, err := client.GetDeploymetMetrics()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	pkg.Show("Deployment", pml)
+	pkg.Show("Deployment", pml, tMetric)
 
 	fmt.Println()
 	fmt.Println()
 
 	// fmt.Println("===== Daemonset =====")
-	pml, err = pkg.GetDaemonsetMetrics(config)
+	pml, err = client.GetDaemonsetMetrics()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	pkg.Show("Daemonset", pml)
+	pkg.Show("Daemonset", pml, tMetric)
 
 	fmt.Println()
 	fmt.Println()
 
 	// fmt.Println("===== StatefulSet =====")
-	pml, err = pkg.GetStatefulsetMetrics(config)
+	pml, err = client.GetStatefulsetMetrics()
 	if err != nil {
-		panic(err)
+		fmt.Println(err.Error())
+		os.Exit(1)
 	}
-	pkg.Show("StatefulSet", pml)
+	pkg.Show("StatefulSet", pml, tMetric)
 }

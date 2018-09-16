@@ -5,7 +5,8 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func BuildConfigFromFlags(contextName string) (*rest.Config, error) {
+// BuildConfigFromFlags ...
+func buildConfigFromFlags(contextName string) (*rest.Config, error) {
 	var loader clientcmd.ClientConfigLoader
 	rules := clientcmd.NewDefaultClientConfigLoadingRules()
 	rules.DefaultClientConfig = &clientcmd.DefaultClientConfig

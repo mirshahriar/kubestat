@@ -23,14 +23,13 @@ func processServiceWiseMetrics(pml *v1beta1.PodMetricsList) *Metric {
 			uMem := c.Usage.Memory()
 			if uMem != nil {
 				mem.Add(*uMem)
-				m.Add(*uMem)
 			}
 		}
 	}
 
 	return &Metric{
-		cpu:       cpu,
-		mem:       mem,
+		cpu:       *cpu,
+		mem:       *mem,
 		pod:       len(pml.Items),
 		container: totalContainer,
 	}

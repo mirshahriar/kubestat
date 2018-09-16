@@ -4,32 +4,18 @@ import (
 	apps "k8s.io/api/apps/v1"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	metricsclientset "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
 // getDeplotment ...
-func getDaemonset(client kubernetes.Interface) (*apps.DaemonSetList, error) {
-	return client.AppsV1().DaemonSets(meta.NamespaceAll).List(meta.ListOptions{
+func (c *Client) getDaemonset() (*apps.DaemonSetList, error) {
+	return c.kubernetesclient.AppsV1().DaemonSets(meta.NamespaceAll).List(meta.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 }
 
 // GetDaemonsetMetrics ...
-func GetDaemonsetMetrics(config *rest.Config) (NamespaceWiseServiceMetrics, error) {
-	client, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return nil, err
-	}
-
-	daemonsets, err := getDaemonset(client)
-	if err != nil {
-		return nil, err
-	}
-
-	// var pml metrics.PodMetricsList
-	mClient, err := metricsclientset.NewForConfig(config)
+func (c *Client) GetDaemonsetMetrics() (NamespaceWiseServiceMetrics, error) {
+	daemonsets, err := c.getDaemonset()
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +27,7 @@ func GetDaemonsetMetrics(config *rest.Config) (NamespaceWiseServiceMetrics, erro
 		if err != nil {
 			return nil, err
 		}
-		podMetricsList, err := mClient.Metrics().PodMetricses(deploy.Namespace).List(meta.ListOptions{
+		podMetricsList, err := c.metricsclient.Metrics().PodMetricses(deploy.Namespace).List(meta.ListOptions{
 			LabelSelector: selector.String(),
 		})
 		if err != nil {
