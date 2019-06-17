@@ -50,6 +50,9 @@ func Show(resourceName string, sm NamespaceWiseServiceMetrics, tMetric *Metric) 
 			pods = pods + metric.pod
 			containers = containers + metric.container
 
+			if len(svc) > 40 {
+				svc = svc[0:40]
+			}
 			//mem.SetScaled(mem.Value(), resource.Mega)
 			row++
 			table.Append([]string{

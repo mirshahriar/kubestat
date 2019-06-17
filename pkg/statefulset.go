@@ -7,15 +7,18 @@ import (
 )
 
 // getStatefulset ...
-func (c *Client) getStatefulset() (*apps.StatefulSetList, error) {
-	return c.kubernetesclient.AppsV1().StatefulSets(meta.NamespaceAll).List(meta.ListOptions{
+func (c *Client) getStatefulset(ns string) (*apps.StatefulSetList, error) {
+	if ns == "" {
+		ns = meta.NamespaceAll
+	}
+	return c.kubernetesclient.AppsV1().StatefulSets(ns).List(meta.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 }
 
 // GetStatefulsetMetrics ...
-func (c *Client) GetStatefulsetMetrics() (NamespaceWiseServiceMetrics, error) {
-	statefulsets, err := c.getStatefulset()
+func (c *Client) GetStatefulsetMetrics(ns string) (NamespaceWiseServiceMetrics, error) {
+	statefulsets, err := c.getStatefulset(ns)
 	if err != nil {
 		return nil, err
 	}

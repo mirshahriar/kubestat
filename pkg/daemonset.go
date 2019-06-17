@@ -7,15 +7,18 @@ import (
 )
 
 // getDeplotment ...
-func (c *Client) getDaemonset() (*apps.DaemonSetList, error) {
-	return c.kubernetesclient.AppsV1().DaemonSets(meta.NamespaceAll).List(meta.ListOptions{
+func (c *Client) getDaemonset(ns string) (*apps.DaemonSetList, error) {
+	if ns == "" {
+		ns = meta.NamespaceAll
+	}
+	return c.kubernetesclient.AppsV1().DaemonSets(ns).List(meta.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 }
 
 // GetDaemonsetMetrics ...
-func (c *Client) GetDaemonsetMetrics() (NamespaceWiseServiceMetrics, error) {
-	daemonsets, err := c.getDaemonset()
+func (c *Client) GetDaemonsetMetrics(ns string) (NamespaceWiseServiceMetrics, error) {
+	daemonsets, err := c.getDaemonset(ns)
 	if err != nil {
 		return nil, err
 	}

@@ -7,15 +7,18 @@ import (
 )
 
 // getDeplotment ...
-func (c *Client) getDeplotment() (*apps.DeploymentList, error) {
-	return c.kubernetesclient.AppsV1().Deployments(meta.NamespaceAll).List(meta.ListOptions{
+func (c *Client) getDeplotment(ns string) (*apps.DeploymentList, error) {
+	if ns == "" {
+		ns = meta.NamespaceAll
+	}
+	return c.kubernetesclient.AppsV1().Deployments(ns).List(meta.ListOptions{
 		LabelSelector: labels.Everything().String(),
 	})
 }
 
 // GetDeploymetMetrics ...
-func (c *Client) GetDeploymetMetrics() (NamespaceWiseServiceMetrics, error) {
-	deployments, err := c.getDeplotment()
+func (c *Client) GetDeploymetMetrics(ns string) (NamespaceWiseServiceMetrics, error) {
+	deployments, err := c.getDeplotment(ns)
 	if err != nil {
 		return nil, err
 	}

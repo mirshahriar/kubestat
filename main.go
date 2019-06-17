@@ -10,9 +10,11 @@ import (
 )
 
 var tsvEnabled bool
+var ns string
 
 func init() {
 	flag.BoolVar(&tsvEnabled, "tsv", false, "Display tab separated value")
+	flag.StringVar(&ns, "ns", "", "")
 	flag.Parse()
 }
 
@@ -31,42 +33,49 @@ func main() {
 	}
 
 	//fmt.Println("===== Deployment =====")
-	pml, err := client.GetDeploymetMetrics()
+	pml, err := client.GetDeploymetMetrics(ns)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	if tsvEnabled {
-		pkg.ShowTSV("Deployment", pml, tMetric)
-	} else {
-		pkg.Show("Deployment", pml, tMetric)
-		fmt.Println()
-		fmt.Println()
+
+	if len(pml) > 0 {
+		if tsvEnabled {
+			pkg.ShowTSV("Deployment", pml, tMetric)
+		} else {
+			pkg.Show("Deployment", pml, tMetric)
+			fmt.Println()
+			fmt.Println()
+		}
 	}
 
 	// fmt.Println("===== Daemonset =====")
-	pml, err = client.GetDaemonsetMetrics()
+	pml, err = client.GetDaemonsetMetrics(ns)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	if tsvEnabled {
-		pkg.ShowTSV("DaemonSet", pml, tMetric)
-	} else {
-		pkg.Show("DaemonSet", pml, tMetric)
-		fmt.Println()
-		fmt.Println()
+	if len(pml) > 0 {
+		if tsvEnabled {
+			pkg.ShowTSV("DaemonSet", pml, tMetric)
+		} else {
+			pkg.Show("DaemonSet", pml, tMetric)
+			fmt.Println()
+			fmt.Println()
+		}
 	}
 
 	// fmt.Println("===== StatefulSet =====")
-	pml, err = client.GetStatefulsetMetrics()
+	pml, err = client.GetStatefulsetMetrics(ns)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
-	if tsvEnabled {
-		pkg.ShowTSV("StatefulSet", pml, tMetric)
-	} else {
-		pkg.Show("StatefulSet", pml, tMetric)
+	if len(pml) > 0 {
+		if tsvEnabled {
+			pkg.ShowTSV("StatefulSet", pml, tMetric)
+		} else {
+			pkg.Show("StatefulSet", pml, tMetric)
+		}
 	}
 }
